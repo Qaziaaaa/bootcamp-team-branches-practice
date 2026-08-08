@@ -5,8 +5,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const URL = "file:///" + path.join(__dirname, "..", "index.html").replace(/\\/g, "/");
 const OUT = (n) => path.join(__dirname, "output", n + ".png");
 
-// reconstruction starts ~5.5s after clicking Reconstruct (3.3s reconstruct + ~2.2s flag)
-// recon phases: map 0.15-0.6, prov-line 0.3-1.55, fills 1.0-1.9, merge 3.8-5.5, labels 6.0-6.5, quote 6.9
+// reconstruction starts ~7.0s after clicking Reconstruct (4.8s reconstruct hold + ~2.2s flag)
+// recon phases: map 0.15-0.6, prov-line 0.3-1.55, fills 1.0-1.9, merge 3.4-5.1, labels 5.1-5.6, quote 5.9, scene ends ~13s
 
 async function run(vp, label) {
   const browser = await puppeteer.launch({
@@ -68,8 +68,8 @@ async function run(vp, label) {
   console.log(label, "reconstruct mid:", JSON.stringify(mid));
   await page.screenshot({ path: OUT(label + "_recon_tape") });
 
-  // composed: sheet visible, fragments gone, tapes visible (recon starts ~5.5s)
-  await sleep(5500);
+  // composed: sheet visible, fragments gone, tapes visible (recon starts ~7.0s)
+  await sleep(6600);
   const done = await page.evaluate(() => {
     const el = (s) => { const e = document.querySelector(s); return e ? getComputedStyle(e).opacity : null; };
     return {
@@ -82,9 +82,9 @@ async function run(vp, label) {
   console.log(label, "reconstruct done:", JSON.stringify(done));
 
   // --- reconstruction hold (map composed, labels + quote visible) ---
-  await sleep(8200);
+  await sleep(7500);
   await page.screenshot({ path: OUT(label + "_recon_composed") });
-  await sleep(4000);
+  await sleep(3500);
   const recon = await page.evaluate(() => {
     const el = (s) => { const e = document.querySelector(s); return e ? getComputedStyle(e).opacity : null; };
     const strand = document.querySelector("#dnaSvg .dna-strand");
