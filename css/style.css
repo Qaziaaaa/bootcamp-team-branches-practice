@@ -556,7 +556,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(18px, 3vw, 48px);
+  gap: clamp(34px, 5vw, 96px);
   width: 100%;
   height: clamp(420px, 62vh, 640px);
 }
@@ -853,7 +853,7 @@ body {
   .fragment--foot    { left: 32%; top: 870px; width: 36%; max-width: 210px; min-height: 104px; rotate: 1.6deg; }
   .frag-map { width: auto; height: 120px; margin: 0 auto; }
 
-  .stage { flex-direction: column; height: auto; min-height: 0; gap: 16px; }
+  .stage { flex-direction: column; height: auto; min-height: 0; gap: 26px; }
   .map-frame { width: 100%; height: min(44vh, 400px); }
   .stage-dna { height: min(38vh, 330px); }
 }
@@ -875,7 +875,7 @@ body {
   .assembled { padding: 18px 14px; }
   .assembled .np-cols { grid-template-columns: 1fr; gap: 8px; }
   .tape { width: 96px; height: 28px; }
-  .stage { gap: 10px; }
+  .stage { gap: 18px; }
   .map-frame { height: min(34vh, 240px); }
   .stage-dna { height: min(30vh, 200px); }
   .recon-flag { width: min(52vw, 220px); }
