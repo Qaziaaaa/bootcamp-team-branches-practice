@@ -5,7 +5,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const URL = "file:///" + path.join(__dirname, "..", "index.html").replace(/\\/g, "/");
 const OUT = (n) => path.join(__dirname, "output", n + ".png");
 
-// reconstruction starts ~7.0s after clicking Reconstruct (4.8s reconstruct hold + ~2.2s flag)
+// reconstruction starts ~8.2s after clicking Reconstruct (6.0s reconstruct hold + ~2.2s flag)
 // recon phases: map 0.15-0.6, prov-line 0.3-1.55, fills 1.0-1.9, merge 3.4-5.1, labels 5.1-5.6, quote 5.9, scene ends ~13s
 
 async function run(vp, label) {
@@ -68,8 +68,8 @@ async function run(vp, label) {
   console.log(label, "reconstruct mid:", JSON.stringify(mid));
   await page.screenshot({ path: OUT(label + "_recon_tape") });
 
-  // composed: sheet visible, fragments gone, tapes visible (recon starts ~7.0s)
-  await sleep(6600);
+  // composed: sheet visible, fragments gone, tapes visible (recon starts ~8.2s)
+  await sleep(7800);
   const done = await page.evaluate(() => {
     const el = (s) => { const e = document.querySelector(s); return e ? getComputedStyle(e).opacity : null; };
     return {
