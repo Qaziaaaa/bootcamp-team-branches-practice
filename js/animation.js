@@ -204,7 +204,8 @@
         { opacity: 0, scale: 1.5 },
         { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.12 }, 1.7);
 
-    tl.call(() => { if (onComplete) onComplete(); }, null, 3.3);
+    // hold the merged front page so its news can be read
+    tl.call(() => { if (onComplete) onComplete(); }, null, 4.8);
   }
 
   function joinFlash(x, y) {
@@ -345,21 +346,21 @@
       .call(() => animateDNA(), null, 0.5)
 
       // migration network traces over the still-separated pieces
-      .call(() => window.Network.show(), null, 2.0)
-      .to("#networkSvg", { opacity: 1, duration: 0.7, ease: "power2.out" }, 2.0)
+      .call(() => window.Network.show(), null, 1.5)
+      .to("#networkSvg", { opacity: 1, duration: 0.7, ease: "power2.out" }, 1.5)
 
       // THE MERGE — every province slams home: no gaps, one nation
       .to(".prov-fill, .prov-line",
-        { x: 0, y: 0, rotation: 0, scale: 1, duration: 1.7, ease: "power4.in", stagger: 0.06 }, 3.8)
-      .add(() => slamImpact(), 5.5)
+        { x: 0, y: 0, rotation: 0, scale: 1, duration: 1.7, ease: "power4.in", stagger: 0.06 }, 3.4)
+      .add(() => slamImpact(), 4.6)
       // internal seams dissolve into a single silhouette
-      .to(".prov-line", { opacity: 0.22, duration: 1.0, ease: "power1.inOut" }, 5.6)
-      .to(".map-label", { opacity: 1, duration: 0.5, stagger: 0.05, ease: "power2.out" }, 6.0)
-      .to("#mapLabel", { opacity: 1, duration: 0.5, ease: "power2.out" }, 6.4)
-      .to("#dnaLabel", { opacity: 1, duration: 0.5, ease: "power2.out" }, 6.45)
-      .call(() => revealQuote("msg2"), null, 6.9);
+      .to(".prov-line", { opacity: 0.22, duration: 1.0, ease: "power1.inOut" }, 4.7)
+      .to(".map-label", { opacity: 1, duration: 0.5, stagger: 0.05, ease: "power2.out" }, 5.1)
+      .to("#mapLabel", { opacity: 1, duration: 0.5, ease: "power2.out" }, 5.5)
+      .to("#dnaLabel", { opacity: 1, duration: 0.5, ease: "power2.out" }, 5.55)
+      .call(() => revealQuote("msg2"), null, 5.9);
 
-    gsap.delayedCall(21, () => {
+    gsap.delayedCall(13, () => {
       if (onComplete) onComplete();
     });
   }
