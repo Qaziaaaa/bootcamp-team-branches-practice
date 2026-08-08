@@ -187,25 +187,27 @@
       });
     }, 1.0);
 
-    // the impact — the instant the sheet lands, the scraps are gone
+    // the full paper materialises over the converging scraps
+    tl.fromTo(sheet,
+      { opacity: 0, scale: 0.92 },
+      { opacity: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 1.0);
+
+    // the instant the paper is fully formed, the chunks are absorbed — gone
     tl.add(() => {
       gsap.set(els, { opacity: 0 });
       flash();
       shakeField();
-      gsap.fromTo(sheet, { scale: 1.06 }, { scale: 1, duration: 0.65, ease: "elastic.out(1, 0.5)", delay: 0.04 });
-    }, 1.3)
-      .fromTo(sheet,
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 0.75, ease: "power3.out" }, 1.3)
+      gsap.fromTo(sheet, { scale: 1.05 }, { scale: 1, duration: 0.6, ease: "elastic.out(1, 0.45)", delay: 0.04 });
+    }, 1.75)
       .fromTo("#assembledSheet > *",
         { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power2.out" }, 1.55)
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power2.out" }, 1.85)
       .fromTo(tapes,
         { opacity: 0, scale: 1.5 },
-        { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.12 }, 1.7);
+        { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.12 }, 2.0);
 
     // hold the merged front page so its news can be read
-    tl.call(() => { if (onComplete) onComplete(); }, null, 4.8);
+    tl.call(() => { if (onComplete) onComplete(); }, null, 6.0);
   }
 
   function joinFlash(x, y) {
