@@ -158,7 +158,7 @@
 
     const tl = gsap.timeline();
 
-    // every scrap is sucked toward its place in the page
+    // every scrap glides to its place in the page — a smooth, weightless settle
     els.forEach((el, i) => {
       const kind = el.dataset.kind || "mast";
       const t = TARGETS[kind] || { x: 0.5, y: 0.5, scale: 0.95 };
@@ -170,13 +170,13 @@
         x: tx,
         y: ty,
         scale: t.scale,
-        duration: 1.0,
-        ease: "power3.in",
-        delay: i * 0.07
+        duration: 0.9,
+        ease: "power2.inOut",
+        delay: i * 0.06
       }, 0);
       tl.fromTo(el,
-        { rotation: () => rand(-14, 14) },
-        { rotation: 0, duration: 1.0, ease: "power3.in", delay: i * 0.07 },
+        { rotation: () => rand(-10, 10) },
+        { rotation: 0, duration: 0.9, ease: "power2.inOut", delay: i * 0.06 },
         0);
     });
 
@@ -185,30 +185,26 @@
       Object.keys(TARGETS).forEach((k) => {
         joinFlash(TARGETS[k].x * fr.width, TARGETS[k].y * fr.height);
       });
-    }, 1.2);
+    }, 1.0);
 
-    // the sheet assembles underneath, then the seams are taped
-    tl.fromTo(sheet,
-      { opacity: 0, scale: 0.9 },
-      { opacity: 1, scale: 1, duration: 0.9, ease: "power3.out" }, 0.55)
-      .fromTo("#assembledSheet > *",
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.09, ease: "power2.out" }, 1.0)
-      .fromTo(tapes,
-        { opacity: 0, scale: 1.5 },
-        { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.14 }, 1.15);
-
-    // let the merged front page breathe before the scraps dissolve
-    tl.to(els, { opacity: 0, scale: 0.82, duration: 0.5, ease: "power2.in", stagger: 0.06 }, 3.15);
-
-    // one strong impact as they become a single document
+    // the impact — the instant the sheet lands, the scraps are gone
     tl.add(() => {
+      gsap.set(els, { opacity: 0 });
       flash();
       shakeField();
-      gsap.fromTo(sheet, { scale: 1.05 }, { scale: 1, duration: 0.6, ease: "elastic.out(1, 0.45)", delay: 0.04 });
-    }, 3.7);
+      gsap.fromTo(sheet, { scale: 1.06 }, { scale: 1, duration: 0.65, ease: "elastic.out(1, 0.5)", delay: 0.04 });
+    }, 1.3)
+      .fromTo(sheet,
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.75, ease: "power3.out" }, 1.3)
+      .fromTo("#assembledSheet > *",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power2.out" }, 1.55)
+      .fromTo(tapes,
+        { opacity: 0, scale: 1.5 },
+        { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.12 }, 1.7);
 
-    tl.call(() => { if (onComplete) onComplete(); }, null, 4.4);
+    tl.call(() => { if (onComplete) onComplete(); }, null, 3.3);
   }
 
   function joinFlash(x, y) {
@@ -335,14 +331,14 @@
 
     tl.set("#recFlash", { opacity: 1, scale: 0.4 }, 0)
       .to("#recFlash", { opacity: 0, scale: 3.2, duration: 0.85, ease: "power2.out" }, 0)
-      .to("#mapSvg", { opacity: 1, duration: 0.7, ease: "power2.out" }, 0.2)
+      .to("#mapSvg", { opacity: 1, duration: 0.45, ease: "power2.out" }, 0.15)
 
-      // ragged outlines of the separated pieces draw themselves — unhurried
+      // ragged outlines of the separated pieces draw themselves — brisk but smooth
       .fromTo(".prov-line",
         { strokeDashoffset: 1 },
-        { strokeDashoffset: 0, duration: 2.6, stagger: 0.1, ease: "power1.inOut" }, 0.4)
+        { strokeDashoffset: 0, duration: 1.25, stagger: 0.05, ease: "power1.inOut" }, 0.3)
       .to(".prov-fill",
-        { opacity: 1, duration: 1.7, ease: "power1.inOut", stagger: 0.07 }, 1.6)
+        { opacity: 1, duration: 0.9, ease: "power1.inOut", stagger: 0.05 }, 1.0)
 
       // DNA builds beside the map — strand draw-in then rungs snap into place
       .to("#dnaSvg", { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.5)
@@ -372,41 +368,59 @@
     const strands = Array.from(document.querySelectorAll("#dnaSvg .dna-strand"));
     if (!strands.length) return;
 
+    const svg = document.getElementById("dnaSvg");
+
     const rungs = Array.from(document.querySelectorAll("#dnaSvg .dna-rung")).map((el) => ({
       el,
       x1: parseFloat(el.getAttribute("x1")),
       x2: parseFloat(el.getAttribute("x2"))
     }));
 
-    // the two strands uncoil slowly, offset so the helix forms with a wave
+    // the two strands uncoil smoothly, offset so the helix forms with a wave
     strands.forEach((s, i) => {
       const len = s.getTotalLength();
       gsap.set(s, { strokeDasharray: len, strokeDashoffset: len });
-      gsap.to(s, { strokeDashoffset: 0, duration: 3.4, ease: "power2.inOut", delay: 0.3 + i * 0.5 });
+      gsap.to(s, { strokeDashoffset: 0, duration: 2.8, ease: "power2.inOut", delay: 0.2 + i * 0.4 });
     });
 
-    // rungs ease into place one after another — no snap, just a settling
+    // rungs stream into place top to bottom, trailing the strands
     rungs.forEach((r, i) => {
       gsap.fromTo(r.el,
         { attr: { x1: 100, x2: 100 }, opacity: 0 },
         {
           attr: { x1: r.x1, x2: r.x2 },
           opacity: 1,
-          duration: 0.85,
+          duration: 0.6,
           ease: "power2.out",
-          delay: 2.9 + i * 0.1
+          delay: 2.2 + i * 0.08
         });
     });
 
-    // once complete, a soft glow settles over the double helix
-    gsap.fromTo("#dnaSvg",
+    // a soft gold glow settles over the finished helix
+    gsap.fromTo(svg,
       { filter: "drop-shadow(0 0 0px rgba(212, 175, 55, 0))" },
-      { filter: "drop-shadow(0 0 15px rgba(212, 175, 55, 0.42))", duration: 1.6, ease: "sine.out", delay: 5.0 });
+      { filter: "drop-shadow(0 0 15px rgba(212, 175, 55, 0.42))", duration: 1.6, ease: "sine.out", delay: 4.4 });
 
-    // a gentle breathing so the finished helix feels alive
-    gsap.fromTo("#dnaSvg",
-      { y: 0 },
-      { y: -4, duration: 2.6, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 6.2 });
+    // a gentle sway so the double helix keeps turning, alive
+    gsap.to(svg, {
+      rotation: 1.8,
+      yoyo: true,
+      repeat: -1,
+      duration: 3.6,
+      ease: "sine.inOut",
+      transformOrigin: "50% 50%",
+      delay: 4.9
+    });
+
+    // the helix breathes
+    gsap.fromTo(svg, { y: 0 }, { y: -4, duration: 2.6, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 5.4 });
+
+    // a signal pulses down the helix forever — rungs shimmer in sequence
+    const pulse = gsap.timeline({ repeat: -1, delay: 5.2 });
+    rungs.forEach((r, i) => {
+      pulse.fromTo(r.el, { opacity: 0.45 }, { opacity: 1, duration: 0.22, ease: "sine.inOut" }, i * 0.06);
+      pulse.fromTo(r.el, { opacity: 1 }, { opacity: 0.45, duration: 0.3, ease: "sine.inOut" }, i * 0.06 + 0.24);
+    });
   }
 
   /* ---------------- ENDING ---------------- */

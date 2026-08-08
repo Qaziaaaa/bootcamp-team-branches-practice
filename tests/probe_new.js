@@ -5,8 +5,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const URL = "file:///" + path.join(__dirname, "..", "index.html").replace(/\\/g, "/");
 const OUT = (n) => path.join(__dirname, "output", n + ".png");
 
-// reconstruction starts ~6.7s after clicking Reconstruct (4.4s reconstruct + ~2.3s flag)
-// recon phases: map 0.2-0.9, prov-line 0.4-3.0, fills 1.6-3.3, merge 3.8-5.5, labels 6.0-6.5, quote 6.9
+// reconstruction starts ~5.5s after clicking Reconstruct (3.3s reconstruct + ~2.2s flag)
+// recon phases: map 0.15-0.6, prov-line 0.3-1.55, fills 1.0-1.9, merge 3.8-5.5, labels 6.0-6.5, quote 6.9
 
 async function run(vp, label) {
   const browser = await puppeteer.launch({
@@ -53,8 +53,8 @@ async function run(vp, label) {
 
   await page.click("#reconstructBtn");
 
-  // during reconstruct flight: pieces should be mid-flight (not at rest), tape animating in
-  await sleep(1500);
+  // during reconstruct flight: pieces should be mid-flight (not at rest), tape not yet in
+  await sleep(800);
   const mid = await page.evaluate(() => {
     const f = document.querySelector(".fragment--mast");
     const r = f.getBoundingClientRect();
@@ -68,8 +68,8 @@ async function run(vp, label) {
   console.log(label, "reconstruct mid:", JSON.stringify(mid));
   await page.screenshot({ path: OUT(label + "_recon_tape") });
 
-  // composed: sheet visible, fragments gone, tapes visible (recon starts ~4.9s)
-  await sleep(4800);
+  // composed: sheet visible, fragments gone, tapes visible (recon starts ~5.5s)
+  await sleep(5500);
   const done = await page.evaluate(() => {
     const el = (s) => { const e = document.querySelector(s); return e ? getComputedStyle(e).opacity : null; };
     return {
