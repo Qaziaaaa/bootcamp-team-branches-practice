@@ -207,7 +207,7 @@
         { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.12 }, 2.0);
 
     // hold the merged front page so its news can be read
-    tl.call(() => { if (onComplete) onComplete(); }, null, 6.0);
+    tl.call(() => { if (onComplete) onComplete(); }, null, 7.5);
   }
 
   function joinFlash(x, y) {

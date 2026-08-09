@@ -118,6 +118,7 @@ body {
 }
 
 .code {
+  position: relative;
   display: flex;
   gap: 18px;
   cursor: text;
