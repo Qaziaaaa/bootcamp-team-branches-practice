@@ -98,6 +98,31 @@
   /* ---------- input wiring ---------- */
   codeBox.addEventListener("click", () => input.focus());
 
+  /* keep the code slots visible above the on-screen keyboard */
+  function adjustForKeyboard() {
+    const wrap = document.querySelector("#lock .lock-wrap");
+    if (!wrap || !codeBox) return;
+    const vv = window.visualViewport;
+    if (!vv || document.activeElement !== input) { wrap.style.transform = ""; return; }
+    if (vv.height > window.innerHeight - 80) { wrap.style.transform = ""; return; }
+    const overlap = codeBox.getBoundingClientRect().bottom - vv.height + 24;
+    if (overlap <= 0) { wrap.style.transform = ""; return; }
+    wrap.style.transform = "translateY(" + (-Math.round(overlap)) + "px)";
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", adjustForKeyboard);
+    window.visualViewport.addEventListener("scroll", adjustForKeyboard);
+  }
+  input.addEventListener("focus", () => {
+    codeBox.scrollIntoView({ block: "center", behavior: "smooth" });
+    setTimeout(adjustForKeyboard, 150);
+    setTimeout(adjustForKeyboard, 450);
+  });
+  input.addEventListener("blur", () => {
+    document.querySelector("#lock .lock-wrap").style.transform = "";
+  });
+
   document.addEventListener("keydown", (e) => {
     if (!state.locked) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
