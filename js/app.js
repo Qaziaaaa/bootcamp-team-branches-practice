@@ -102,20 +102,21 @@
   const lockWrap = document.querySelector("#lock .lock-wrap");
   let kbLift = 0;
 
-  function applyLift(px) {
+  function applyLift(px, scale) {
     kbLift = px;
-    if (lockWrap) lockWrap.style.transform = kbLift ? "translateY(" + (-kbLift) + "px)" : "";
+    scale = scale || 1;
+    if (lockWrap) lockWrap.style.transform = kbLift ? "translateY(" + (-kbLift) + "px) scale(" + scale + ")" : "";
   }
 
   function adjustForKeyboard() {
     const vv = window.visualViewport;
-    if (!vv || document.activeElement !== input) { applyLift(0); return; }
-    if (vv.height > window.innerHeight - 80) { applyLift(0); return; }
+    if (!vv || document.activeElement !== input) { applyLift(0, 1); return; }
+    if (vv.height > window.innerHeight - 80) { applyLift(0, 1); return; }
     const bottom = codeBox.getBoundingClientRect().bottom + kbLift - (vv.offsetTop || 0);
     const overlap = bottom - vv.height + 36;
-    if (overlap <= 0) { applyLift(0); return; }
-    const maxLift = lockWrap ? lockWrap.getBoundingClientRect().top + kbLift : overlap;
-    applyLift(Math.round(Math.min(overlap, maxLift)));
+    if (overlap <= 0) { applyLift(0, 1); return; }
+    const scale = Math.min(1, (vv.height - 48) / lockWrap.offsetHeight);
+    applyLift(Math.round(overlap), scale);
   }
 
   if (window.visualViewport) {
