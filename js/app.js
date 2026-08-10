@@ -99,29 +99,37 @@
   codeBox.addEventListener("click", () => input.focus());
 
   /* keep the code slots visible above the on-screen keyboard */
+  const lockWrap = document.querySelector("#lock .lock-wrap");
+  let kbLift = 0;
+
+  function applyLift(px) {
+    kbLift = px;
+    if (lockWrap) lockWrap.style.transform = kbLift ? "translateY(" + (-kbLift) + "px)" : "";
+  }
+
   function adjustForKeyboard() {
-    const wrap = document.querySelector("#lock .lock-wrap");
-    if (!wrap || !codeBox) return;
     const vv = window.visualViewport;
-    if (!vv || document.activeElement !== input) { wrap.style.transform = ""; return; }
-    if (vv.height > window.innerHeight - 80) { wrap.style.transform = ""; return; }
-    const overlap = codeBox.getBoundingClientRect().bottom - vv.height + 24;
-    if (overlap <= 0) { wrap.style.transform = ""; return; }
-    wrap.style.transform = "translateY(" + (-Math.round(overlap)) + "px)";
+    if (!vv || document.activeElement !== input) { applyLift(0); return; }
+    if (vv.height > window.innerHeight - 80) { applyLift(0); return; }
+    const bottom = codeBox.getBoundingClientRect().bottom + kbLift - (vv.offsetTop || 0);
+    const overlap = bottom - vv.height + 36;
+    if (overlap <= 0) { applyLift(0); return; }
+    const maxLift = lockWrap ? lockWrap.getBoundingClientRect().top + kbLift : overlap;
+    applyLift(Math.round(Math.min(overlap, maxLift)));
   }
 
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", adjustForKeyboard);
     window.visualViewport.addEventListener("scroll", adjustForKeyboard);
   }
+  window.addEventListener("resize", adjustForKeyboard);
   input.addEventListener("focus", () => {
+    applyLift(0);
     codeBox.scrollIntoView({ block: "center", behavior: "smooth" });
-    setTimeout(adjustForKeyboard, 150);
-    setTimeout(adjustForKeyboard, 450);
+    [150, 300, 500, 800].forEach((t) => setTimeout(adjustForKeyboard, t));
   });
-  input.addEventListener("blur", () => {
-    document.querySelector("#lock .lock-wrap").style.transform = "";
-  });
+  input.addEventListener("input", adjustForKeyboard);
+  input.addEventListener("blur", () => applyLift(0));
 
   document.addEventListener("keydown", (e) => {
     if (!state.locked) return;
