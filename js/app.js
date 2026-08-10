@@ -125,9 +125,13 @@
   }
   window.addEventListener("resize", adjustForKeyboard);
   input.addEventListener("focus", () => {
-    applyLift(0);
+    applyLift(0, 1);
     codeBox.scrollIntoView({ block: "center", behavior: "smooth" });
-    [150, 300, 500, 800].forEach((t) => setTimeout(adjustForKeyboard, t));
+    let polls = 0;
+    (function poll() {
+      adjustForKeyboard();
+      if (document.activeElement === input && polls++ < 20) setTimeout(poll, 150);
+    })();
   });
   input.addEventListener("input", adjustForKeyboard);
   input.addEventListener("blur", () => applyLift(0));
